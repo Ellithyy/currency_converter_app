@@ -39,6 +39,13 @@ class _ConverterViewState extends State<_ConverterView> {
   final _amountController = TextEditingController();
   String? _from = 'USD';
   String? _to = 'EUR';
+  bool _amountTouched = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _amountController.addListener(() => setState(() {}));
+  }
 
   @override
   void dispose() {
@@ -46,11 +53,35 @@ class _ConverterViewState extends State<_ConverterView> {
     super.dispose();
   }
 
+  String? get _amountError {
+    if (!_amountTouched) return null;
+    final text = _amountController.text.trim();
+    if (text.isEmpty) return 'Please enter an amount';
+    final amount = double.tryParse(text);
+    if (amount == null) return 'Please enter a valid number';
+    if (amount <= 0) return 'Amount must be greater than zero';
+    return null;
+  }
+
+  bool get _canConvert {
+    final text = _amountController.text.trim();
+    if (text.isEmpty) return false;
+    final amount = double.tryParse(text);
+    if (amount == null || amount <= 0) return false;
+    if (_from == null || _to == null) return false;
+    if (_from == _to) return false;
+    return true;
+  }
+
   void _onConvert() {
-    final amount = double.tryParse(_amountController.text.trim());
-    if (amount == null || _from == null || _to == null) return;
+    setState(() => _amountTouched = true);
+    if (!_canConvert) return;
     context.read<ConverterBloc>().add(
-          ConvertRequested(from: _from!, to: _to!, amount: amount),
+          ConvertRequested(
+            from: _from!,
+            to: _to!,
+            amount: double.parse(_amountController.text.trim()),
+          ),
         );
   }
 
@@ -64,12 +95,17 @@ class _ConverterViewState extends State<_ConverterView> {
               ? currState.currencies.map((c) => c.code).toList()
               : <String>['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF'];
 
+          final sameCurrency = _from != null && _from == _to;
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                AmountInput(controller: _amountController),
+                AmountInput(
+                  controller: _amountController,
+                  errorText: _amountError,
+                ),
                 const SizedBox(height: 16),
                 CurrencySelector(
                   label: 'From',
@@ -84,22 +120,38 @@ class _ConverterViewState extends State<_ConverterView> {
                   currencies: currencies,
                   onChanged: (v) => setState(() => _to = v),
                 ),
+                if (sameCurrency) ...[
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Source and target currency must be different.',
+                    style: TextStyle(color: Colors.orange, fontSize: 13),
+                  ),
+                ],
                 const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _onConvert,
-                  child: const Text('Convert'),
+                BlocBuilder<ConverterBloc, ConverterState>(
+                  builder: (context, state) {
+                    final isLoading = state is ConverterLoading;
+                    return ElevatedButton(
+                      onPressed: isLoading ? null : _onConvert,
+                      child: isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Convert'),
+                    );
+                  },
                 ),
                 const SizedBox(height: 24),
                 BlocBuilder<ConverterBloc, ConverterState>(
                   builder: (context, state) {
-                    if (state is ConverterLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
                     if (state is ConverterError) {
                       return Center(
                         child: Text(
                           state.message,
                           style: const TextStyle(color: Colors.red),
+                          textAlign: TextAlign.center,
                         ),
                       );
                     }

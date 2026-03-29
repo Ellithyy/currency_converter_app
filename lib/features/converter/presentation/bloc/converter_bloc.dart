@@ -22,8 +22,10 @@ class ConverterBloc extends Bloc<ConverterEvent, ConverterState> {
         amount: event.amount,
       );
       emit(ConverterLoaded(result));
-    } catch (e) {
-      emit(ConverterError(e.toString()));
+    } catch (_) {
+      emit(const ConverterError(
+        'Conversion failed. Please check your connection and try again.',
+      ));
     }
   }
 }
