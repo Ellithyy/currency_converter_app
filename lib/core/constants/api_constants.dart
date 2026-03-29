@@ -1,9 +1,11 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = 'https://api.exchangeratesapi.io/v1';
+  static const String baseUrl = 'https://v6.exchangerate-api.com/v6';
+  static const String apiKey = '50a12b673e1070dec1c28726';
 
-  static const String latestRates = '/latest';
-  static const String symbols = '/symbols';
-  static const String convert = '/convert';
+  static const String latest = '/latest';
+  static const String baseCurrency = 'USD';
+
+  static const String convert = '/pair';
 }

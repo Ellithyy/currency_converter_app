@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../../currencies/presentation/pages/currencies_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Currency Converter'),
-      ),
-    );
+    return const CurrenciesPage();
   }
 }
