@@ -18,8 +18,10 @@ class CurrenciesBloc extends Bloc<CurrenciesEvent, CurrenciesState> {
     try {
       final currencies = await getSupportedCurrencies();
       emit(CurrenciesLoaded(currencies));
-    } catch (e) {
-      emit(CurrenciesError(e.toString()));
+    } catch (_) {
+      emit(const CurrenciesError(
+        'Failed to load currencies. Please try again.',
+      ));
     }
   }
 }

@@ -24,14 +24,22 @@ class ConverterRemoteDataSourceImpl implements ConverterRemoteDataSource {
   }) async {
     try {
       final response = await dioClient.dio.get(
-        '/${ApiConstants.apiKey}${ApiConstants.convert}/$from/$to/$amount',
+        ApiConstants.latest,
+        queryParameters: {'from': from, 'to': to},
       );
 
-      if (response.data['result'] != 'success') {
-        throw const ServerException();
-      }
+      final rates = response.data['rates'] as Map<String, dynamic>;
+      if (!rates.containsKey(to)) throw const ServerException();
 
-      return ConversionRateModel.fromJson(response.data, amount);
+      final rate = (rates[to] as num).toDouble();
+
+      return ConversionRateModel(
+        fromCurrency: from,
+        toCurrency: to,
+        amount: amount,
+        convertedAmount: amount * rate,
+        rate: rate,
+      );
     } catch (e) {
       if (e is ServerException) rethrow;
       throw const ServerException();

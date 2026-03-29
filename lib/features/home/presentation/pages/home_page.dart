@@ -1,5 +1,6 @@
 import 'package:currency_converter_app/features/converter/presentation/pages/converter_page.dart';
 import 'package:currency_converter_app/features/currencies/presentation/pages/currencies_page.dart';
+import 'package:currency_converter_app/features/history/presentation/pages/history_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   final _pages = const [
     CurrenciesPage(),
     ConverterPage(),
+    HistoryPage(),
   ];
 
   @override
@@ -32,6 +34,10 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.swap_horiz),
             label: 'Converter',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'History',
           ),
         ],
       ),

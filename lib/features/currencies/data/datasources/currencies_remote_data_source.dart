@@ -15,19 +15,12 @@ class CurrenciesRemoteDataSourceImpl implements CurrenciesRemoteDataSource {
   @override
   Future<List<CurrencyModel>> fetchCurrencies() async {
     try {
-      final response = await dioClient.dio.get(
-        '/${ApiConstants.apiKey}${ApiConstants.latest}/${ApiConstants.baseCurrency}',
-      );
+      final response = await dioClient.dio.get(ApiConstants.currencies);
 
-      if (response.data['result'] != 'success') {
-        throw const ServerException();
-      }
+      final Map<String, dynamic> data = response.data as Map<String, dynamic>;
 
-      final Map<String, dynamic> rates =
-          response.data['conversion_rates'] as Map<String, dynamic>;
-
-      return rates.keys
-          .map((code) => CurrencyModel(code: code, name: code))
+      return data.entries
+          .map((e) => CurrencyModel(code: e.key, name: e.value as String))
           .toList();
     } catch (e) {
       if (e is ServerException) rethrow;

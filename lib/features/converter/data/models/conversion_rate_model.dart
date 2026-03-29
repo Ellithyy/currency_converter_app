@@ -8,17 +8,4 @@ class ConversionRateModel extends ConversionResultEntity {
     required super.convertedAmount,
     required super.rate,
   });
-
-  factory ConversionRateModel.fromJson(
-    Map<String, dynamic> json,
-    double amount,
-  ) {
-    return ConversionRateModel(
-      fromCurrency: json['base_code'] as String,
-      toCurrency: json['target_code'] as String,
-      amount: amount,
-      convertedAmount: (json['conversion_result'] as num).toDouble(),
-      rate: (json['conversion_rate'] as num).toDouble(),
-    );
-  }
 }
