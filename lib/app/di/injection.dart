@@ -1,5 +1,8 @@
-/// Dependency injection setup.
-/// Dependencies will be registered here as features are implemented.
+import 'package:get_it/get_it.dart';
+import '../../core/network/dio_client.dart';
+
+final sl = GetIt.instance;
+
 void setupDependencies() {
-  // TODO: register dependencies
+  sl.registerLazySingleton<DioClient>(() => DioClient());
 }
