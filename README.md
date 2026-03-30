@@ -177,6 +177,24 @@ No API key or environment configuration is required. The app works out of the bo
 
 ---
 
+## Testing
+
+I added a focused test suite covering the most important parts of the project — business logic, repository behavior, and BLoC state transitions. I kept it lean rather than aiming for exhaustive coverage at this stage.
+
+| Test file | What it covers |
+|-----------|----------------|
+| `converter/domain/convert_currency_test.dart` | Use case delegates to the repository and returns the result |
+| `currencies/data/currencies_repository_impl_test.dart` | Cache-first: returns local data when available; fetches and caches from remote when local is empty |
+| `converter/presentation/bloc/converter_bloc_test.dart` | `Loading → Loaded` on success; `Loading → Error` on failure |
+| `widget_test.dart` | App widget renders without crashing |
+
+```bash
+# Run all tests
+flutter test
+```
+
+---
+
 ## Notes and Assumptions
 
 - The currency list is cached after the first successful API response. Clearing the app data or reinstalling will trigger a fresh fetch.
@@ -184,12 +202,3 @@ No API key or environment configuration is required. The app works out of the bo
 - The converter defaults to USD → EUR on first load. Both currencies are always available in Frankfurter.
 - Country flags are resolved through a local mapper that covers all Frankfurter-supported currencies, with a two-character code fallback for any unmapped codes.
 
----
-
-## Future Improvements
-
-- Add unit tests for use cases, repositories, and BLoCs
-- Add a splash screen and proper app theming
-- Allow the user to select custom currency pairs on the history screen
-- Cache the last conversion result locally for offline display
-- Add pull-to-refresh on the currencies and history screens
