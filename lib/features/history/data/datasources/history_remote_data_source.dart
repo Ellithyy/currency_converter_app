@@ -11,7 +11,6 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
 
   HistoryRemoteDataSourceImpl(this.dioClient);
 
-  // EGP is not available in Frankfurter (ECB data). Using EUR + GBP.
   static const _targets = ['EUR', 'GBP'];
 
   @override
@@ -20,7 +19,6 @@ class HistoryRemoteDataSourceImpl implements HistoryRemoteDataSource {
       final end = DateTime.now().subtract(const Duration(days: 1));
       final start = end.subtract(const Duration(days: 6));
 
-      // One request: GET /{start}..{end}?from=USD&to=EUR,GBP
       final response = await dioClient.dio.get(
         '/${_fmt(start)}..${ _fmt(end)}',
         queryParameters: {'from': 'USD', 'to': _targets.join(',')},
